@@ -1,0 +1,125 @@
+spring:
+
+  # ==========================================================
+  # CONFIGURATION DE LA BASE DE DONNÉES (DATA SOURCE)
+  # ==========================================================
+  datasource:
+
+    # URL de connexion à la base PostgreSQL
+    # Format : jdbc:postgresql://HOST:PORT/NOM_BASE
+    # Ici :
+    # - localhost → machine locale (ou container exposé)
+    # - 5432 → port PostgreSQL
+    # - book_social_network → nom de la base
+    url: jdbc:postgresql://localhost:5432/book_social_network
+
+    # Nom d'utilisateur de la base de données
+    # utilisé par Spring pour se connecter à PostgreSQL
+    username: ismaelkouda
+
+    # Mot de passe associé à l'utilisateur DB
+    password: password
+
+    # Driver JDBC utilisé pour communiquer avec PostgreSQL (C'est la "bibliothèque interne" qui traduit Java ↔ SQL)
+    driver-class-name: org.postgresql.Driver
+
+
+  # ==========================================================
+  # CONFIGURATION JPA / HIBERNATE (ORM)
+  # ==========================================================
+  jpa:
+
+    hibernate:
+
+      # ddl-auto contrôle la génération des tables automatiquement (update → met à jour les tables automatiquement)
+      ddl-auto: update
+
+    # Affiche les requêtes SQL dans la console (utile pour debug)
+    show-sql: false
+
+    properties:
+      hibernate:
+
+        # Formate le SQL pour le rendre lisible (indentation + mise en forme)
+        format_sql: true
+
+    # Type de base de données utilisé (permet à Hibernate d'adapter ses comportements SQL)
+    database: postgresql
+
+    # Dialecte Hibernate
+    #
+    # Permet de dire : "génère du SQL compatible PostgreSQL"
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+
+  # ==========================================================
+  # CONFIGURATION EMAIL (SMTP)
+  # ==========================================================
+  mail:
+
+    # Serveur SMTP utilisé pour envoyer les emails (Ici localhost car tu utilises MailDev en développement)
+    host: localhost
+
+    # Port SMTP exposé par MailDev (025 = port standard MailDev pour capturer les emails)
+    port: 1025
+
+    # Identifiants SMTP (souvent inutiles avec MailDev)
+    username: ali
+    password: ali
+
+
+    # ======================================================
+    # PROPRIÉTÉS SMTP AVANCÉES
+    # ======================================================
+    properties:
+      mail:
+        smtp:
+
+          # Liste des serveurs autorisés / de confiance
+          # "*" = accepter tous (utile en dev uniquement)
+          trust: "*"
+
+          # Active l'authentification SMTP
+          # nécessaire si serveur réel (Gmail, AWS SES, etc.)
+          auth: true
+
+          # ==================================================
+          # STARTTLS = chiffrement des emails
+          # ==================================================
+          starttls:
+
+            # Active TLS (sécurisation des emails)
+            enable: true
+
+          # ==================================================
+          # TIMEOUTS (très important en production)
+          # ==================================================
+
+          # Temps max pour établir la connexion SMTP
+          connectiontimeout: 5000
+
+          # Temps max pour envoyer un email
+          timeout: 3000
+
+          # Temps max pour écrire les données email
+          writetimeout: 5000
+
+
+
+application:
+  security:
+    jwt:
+      secret-key: adzadfzadfzdzdzadazdazdad
+      expiration: 864
+
+  mailing:
+    frontend:
+      activation-url: http://localhost:4200/activate-account
+
+  file:
+      upload:
+          photos-output-path: ./uploads
+
+server:
+  port: 8080
+

@@ -1,0 +1,39 @@
+spring:
+
+  # ==========================================================
+  # PROFIL ACTIF (ENVIRONNEMENT)
+  # ==========================================================
+  profiles:
+
+    # Définit l’environnement actif, ici : dev (développement)
+    active: dev
+
+
+  # ==========================================================
+  # CONFIGURATION DES UPLOADS DE FICHIERS
+  # ==========================================================
+  servlet:
+    multipart:
+
+      # Taille maximale autorisée pour un fichier uploadé, Exemple : - image - PDF - vidéo
+      # Si fichier > 50MB → erreur HTTP 413 (Payload Too Large)
+      max-file-size: 50MB
+
+
+# ==========================================================
+# CONFIGURATION SPRINGDOC (SWAGGER / OPENAPI)
+# ==========================================================
+springdoc:
+
+  # Définit le type de réponse par défaut des API REST (Ici : toutes les API retournent du JSON par défaut)
+  default-produces-media-type: application/json
+
+
+# ==========================================================
+# CONFIGURATION DU SERVEUR WEB EMBARQUÉ (TOMCAT)
+# ==========================================================
+server:
+  servlet:
+
+    # Context path global de l’application (Cela ajoute un préfixe à TOUTES les routes REST)
+    context-path: /api/v1/

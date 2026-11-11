@@ -1,0 +1,97 @@
+# Docker Compose
+# Ce fichier décrit tous les conteneurs (services) nécessaires à l'application.
+
+# Lorsque l'on exécute : docker compose up
+# Docker lit ce fichier et crée automatiquement les conteneurs décrits ci-dessous.
+services:
+
+  # SERVICE : POSTGRESQL
+  # Base de données relationnelle utilisée par l'application Spring Boot.
+  postgres:
+
+    # Réseau Docker auquel appartient le conteneur.
+    # Grâce à ce réseau, les autres conteneurs (Spring Boot, Redis...) pourront communiquer avec PostgreSQL.
+    # Exemple : jdbc:postgresql://postgres:5432/book_social_network Ici "postgres" est le nom du service.
+    networks:
+      - spring-demo
+
+    # Nom réel du conteneur Docker (Sans cette propriété Docker générera un nom automatiquement)
+    container_name: postgres-dev-bsn
+
+    # Image Docker utilisée.
+    # Docker téléchargera automatiquement l'image officielle PostgreSQL depuis Docker Hub si elle n'est pas déjà présente.
+    image: postgres:17
+
+    # Politique de redémarrage de ce contenenur.
+    # unless-stopped signifie : NE PAS redémarrer si l'utilisateur l'a arrêté volontairement sinon redémarre
+    restart: unless-stopped
+
+    # Volume Docker.
+    # Permet de conserver les données même si le conteneur est supprimé.
+    # Sans volume : docker compose down (toutes les données disparaissent)
+    # Avec un volume : les bases restent enregistrées sur le disque.
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+    # Exposition des ports.
+    # Syntaxe => port_machine:port_conteneur
+    # localhost:5432, est relié au PostgreSQL tournant dans le conteneur.
+    ports:
+      - 5432:5432
+
+    # Variables d'environnement utilisées par PostgreSQL lors du premier démarrage du conteneur.
+    environment:
+      # Nom de l'utilisateur administrateur créé automatiquement.
+      POSTGRES_USER: ismaelkouda
+      # Mot de passe de cet utilisateur.
+      POSTGRES_PASSWORD: password
+      # Nom de la base créée automatiquement au premier lancement.
+      POSTGRES_DB: book_social_network
+      # Répertoire interne où PostgreSQL stocke ses fichiers. Ce chemin doit correspondre au volume monté ci-dessus
+      PGDATA: /var/lib/postgresql/data
+
+
+
+  # SERVICE : MAILDEV
+  # Faux serveur SMTP utilisé uniquement en développement (Aucun email n'est réellement envoyé)
+
+  # Tous les emails envoyés par Spring Boot sont interceptés puis affichés
+  # dans une interface Web.
+
+  # Très pratique pour tester :
+  # - inscription
+  # - confirmation d'email
+  # - réinitialisation du mot de passe
+  mail-dev:
+
+    container_name: mail-dev-bsn
+    image: maildev/maildev:2.2.1
+
+    ports:
+      # Interface Web permettant de consulter les emails (http://localhost:1080)
+      - 1080:1080
+      # Serveur SMTP: Spring Boot enverra les emails sur ce port (spring.mail.port=1025)
+      - 1025:1025
+
+
+
+# RÉSEAUX
+# Les réseaux permettent aux conteneurs de communiquer entre eux.
+# Ici, Spring Boot pourra accéder à PostgreSQL simplement avec : postgres:5432 (sans utiliser localhost.)
+networks:
+
+  spring-demo:
+    # Driver réseau utilisé (bridge est le réseau Docker classique)
+    # Tous les conteneurs appartenant à ce réseau peuvent communiquer
+    # entre eux de manière isolée.
+    driver: bridge
+
+
+
+# VOLUMES
+# Les volumes permettent de conserver les données même après suppression d'un conteneur (Docker stockera ce volume sur le disque de la machine.)
+volumes:
+
+  postgres:
+    # Driver du volume (local signifie que les données sont enregistrées sur le disque local de l'ordinateur.)
+    driver: local
